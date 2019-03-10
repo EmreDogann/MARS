@@ -12,16 +12,16 @@ public class MainMenu extends Container {
     private JButton levelEditorButton;
     private JButton quitButton;
 
-    MainMenu() {
+    MainMenu(Game game) {
         mainPanel.setBackground(new Color(0, 0, 0, 0));
         mainPanel.setBounds(BackgroundPanel.WIDTH/2-50, BackgroundPanel.HEIGHT/2-75, 100, 150);
         playButton.addActionListener(e -> {
-            Game.levelNum = 1;
-            Game.loadLevel();
+            game.setLevelNum(1);
+            game.loadLevel();
         });
         levelEditorButton.addActionListener(e -> {
-            Game.levelNum = 6;
-            Game.loadLevel();
+            game.setLevelNum(7);
+            game.loadLevel();
         });
         quitButton.addActionListener(e -> System.exit(0));
     }

@@ -24,11 +24,14 @@ public class KeyHandler extends JFrame implements KeyListener {
     private StaticBody jumpCloud;
     private boolean flip = false;
 
-    KeyHandler(MainCharacter astronaut, ActionListener lookAtCursor, StepHandler step, float dashSpeed, World world) {
+    private Game game;
+
+    KeyHandler(MainCharacter astronaut, ActionListener lookAtCursor, StepHandler step, float dashSpeed, World world, Game game) {
         //System.out.println("Listening for keys...");
         this.astronaut = astronaut;
         this.lookAtCursor = lookAtCursor;
         this.step = step;
+        this.game = game;
         dustCloud = new StaticBody(world);
         jumpCloud = new StaticBody(world);
 
@@ -81,30 +84,33 @@ public class KeyHandler extends JFrame implements KeyListener {
 
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
+        if (game.getLevelNum() > 4 || astronaut.isAcquiredBoots()) {
+            /*If the dashing cool-down timer is depleted and the user does not have both keys pressed (!astronaut.stopped).*/
+            if (astronaut.isCanDash() && !astronaut.isBothKeysPressed()) {
+                if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    /*stopWalking() is called otherwise the applied force would be overwritten when the step listener in Walker changes the velocity.*/
+                    astronaut.stopWalking();
+                    astronaut.changeImages("DashPic.png");
+                    if (!astronaut.getAstronautImage().isFlippedHorizontal()) {
+                        astronaut.applyForce(new Vec2(3000 * dashSpeed, astronaut.getLinearVelocity().y));
+                        astronaut.addImage(new BodyImage("data/Dash.gif", 2));
+                    } else {
+                        astronaut.applyForce(new Vec2(-3000 * dashSpeed, astronaut.getLinearVelocity().y));
+                        astronaut.addImage(new BodyImage("data/Dash.gif", 2)).flipHorizontal();
+                    }
 
-        /*If the dashing cool-down timer is depleted and the user does not have both keys pressed (!astronaut.stopped).*/
-        if (astronaut.isCanDash() && !astronaut.isBothKeysPressed()) {
-            if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
-                /*stopWalking() is called otherwise the applied force would be overwritten when the step listener in Walker changes the velocity.*/
-                astronaut.stopWalking();
-                astronaut.changeImages("DashPic.png");
-                if (!astronaut.getAstronautImage().isFlippedHorizontal()) {
-                    astronaut.applyForce(new Vec2(3000 * dashSpeed, astronaut.getLinearVelocity().y));
-                    astronaut.addImage(new BodyImage("data/Dash.gif", 2));
-                } else {
-                    astronaut.applyForce(new Vec2(-3000 * dashSpeed, astronaut.getLinearVelocity().y));
-                    astronaut.addImage(new BodyImage("data/Dash.gif", 2)).flipHorizontal();
+                    if (game.getLevelNum() == 1) {
+                        /*If the player is grounded, produce a dust cloud when dashing.*/
+                        if (!astronaut.isJumping()) {
+                            dustCloud.setPosition(astronaut.getPosition());
+                            flip = false;
+                            timer.start();
+                        }
+                    }
+
+                    step.setDashing(true);
+                    astronaut.setCanDash(false);
                 }
-
-                /*If the player is grounded, produce a dust cloud when dashing.*/
-                if (!astronaut.isJumping()) {
-                    dustCloud.setPosition(astronaut.getPosition());
-                    flip = false;
-                    timer.start();
-                }
-
-                step.setDashing(true);
-                astronaut.setCanDash(false);
             }
         }
 
@@ -207,7 +213,9 @@ public class KeyHandler extends JFrame implements KeyListener {
             }
         }
         //Have the arm rotate to look at the mouse cursor.
-        lookAtCursor.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+        if (astronaut.getArmImage().equals("data/ArmPistol.png")) {
+            lookAtCursor.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+        }
     }
 
     public void keyReleased(KeyEvent e) {
@@ -238,7 +246,9 @@ public class KeyHandler extends JFrame implements KeyListener {
             if (!step.isDashing() && !astronaut.isJumping()) {
                 astronaut.changeImages("WalkAnimation.gif");
             }
-            lookAtCursor.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+            if (astronaut.getArmImage().equals("data/ArmPistol.png")) {
+                lookAtCursor.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+            }
 
         } else if (key == previousKey && (key == KeyEvent.VK_A || key == KeyEvent.VK_D)) {  //If the player pressed 'a' or 'd' and released it without pressing a different key.
             if (!step.isDashing()) {
@@ -266,7 +276,9 @@ public class KeyHandler extends JFrame implements KeyListener {
             if (!astronaut.isJumping() && !step.isDashing()) {
                 astronaut.changeImages("Idle.png");
             }
-            lookAtCursor.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+            if (astronaut.getArmImage().equals("data/ArmPistol.png")) {
+                lookAtCursor.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+            }
 
         } else if (previousKey == KeyEvent.VK_SPACE && (key == KeyEvent.VK_D || key == KeyEvent.VK_A)) {  //If the first key released after pressing SPACE is either 'a' or 'd'...
             if (!step.isDashing()) {

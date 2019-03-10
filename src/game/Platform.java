@@ -8,7 +8,7 @@ import city.cs.engine.World;
 public class Platform extends StaticBody {
     private String type;
 
-    public Platform(World w, Shape shape, String type) {
+    public Platform(SuperLevel w, Shape shape, String type) {
         super(w, shape);
         this.type = type;
     }

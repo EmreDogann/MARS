@@ -1,17 +1,15 @@
 package game;
 
-import city.cs.engine.SimulationSettings;
-import city.cs.engine.StepEvent;
-import city.cs.engine.StepListener;
+import city.cs.engine.*;
 import org.jbox2d.common.Vec2;
 
-import java.sql.SQLSyntaxErrorException;
-import java.util.Random;
+import java.util.List;
 
 public class StepHandler implements StepListener {
 
     private MainCharacter astronaut;
     private BackgroundPanel view;
+    private Game game;
     private SimulationSettings settings = new SimulationSettings(60);
 
     private float dashDuration;
@@ -23,16 +21,39 @@ public class StepHandler implements StepListener {
 
     private boolean startAccelerate = false;
 
-    StepHandler(BackgroundPanel view, MainCharacter astronaut) {
+    private Score score;
+    private float scoreAmount = 0;
+    private StaticBody ground;
+
+    private float enemyDamageDealt = 0;
+    private float groundDamageDealt = 0;
+
+    StepHandler(BackgroundPanel view, MainCharacter astronaut, Game game) {
+        this.game = game;
+        this.score = game.getScore();
         this.view = view;
         this.astronaut = astronaut;
         this.dashDuration = defaultDashDuration;
         this.jumpCooldown = 0.0f;
+        if (game.getLevelNum() == 1) {
+            findGround();
+        }
+    }
+
+    private void findGround() {
+        List<StaticBody> bodies = game.getWorld().getStaticBodies();
+        for (Body body : bodies) {
+            if (body.getName().equals("Ground")) {
+                ground = (StaticBody) body;
+                break;
+            }
+        }
     }
 
     public boolean isStartAccelerate() {
         return startAccelerate;
     }
+
     void setStartAccelerate(boolean startAccelerate) {
         this.startAccelerate = startAccelerate;
     }
@@ -40,6 +61,7 @@ public class StepHandler implements StepListener {
     public boolean isJump() {
         return jump;
     }
+
     void setJump(boolean jump) {
         this.jump = jump;
     }
@@ -47,12 +69,26 @@ public class StepHandler implements StepListener {
     boolean isDashing() {
         return jump;
     }
+
     void setDashing(boolean dashing) {
         this.dashing = dashing;
     }
 
     @Override
     public void preStep(StepEvent stepEvent) {
+        if (score != null) {
+            score.setCurrTime(score.getCurrTime() + settings.getTimeStep());
+            if (score.isScoreChanged()) {
+                if (scoreAmount < score.getChangeAmount()) {
+                    scoreAmount += 5;
+                    score.setCurrScore(score.getCurrScore() + 5);
+                } else {
+                    scoreAmount = 0;
+                    score.setChangeAmount(0);
+                    score.setScoreChanged(false);
+                }
+            }
+        }
         view.setCentre(new Vec2(astronaut.getPosition().x, 0));
         view.setX(astronaut.getPosition().x);
 
@@ -141,12 +177,45 @@ public class StepHandler implements StepListener {
                 astronaut.setCanJump(true);
             }
         }
-        astronaut.setJumpPressedRemember(astronaut.getJumpPressedRemember()-settings.getTimeStep());
+        astronaut.setJumpPressedRemember(astronaut.getJumpPressedRemember() - settings.getTimeStep());
     }
 
     @Override
     public void postStep(StepEvent stepEvent) {
-        //view.setX(astronaut.getPosition().x);
+        view.setX(astronaut.getPosition().x);
+        if (game.getLevelNum() > 1 && game.getWorld().getState() == STATE.GAME) {
+            if (astronaut.getPosition().y < -20) {
+                game.gameOver();
+            }
+        } else if (game.getLevelNum() == 1 && game.getWorld().getState() == STATE.GAME) {
+            if (score.getCurrTime() > 1.5f) {
+                List<Body> bodiesInContact = astronaut.getBodiesInContact();
+                if (bodiesInContact.contains(ground)) {
+                    groundDamageDealt = computeDamageDealt(groundDamageDealt, 3f);
+                }
+            }
+        }
+
+        List<Body> bodiesInContact = astronaut.getBodiesInContact();
+        for (Body body : bodiesInContact) {
+            if (body instanceof Enemy) {
+                enemyDamageDealt = computeDamageDealt(enemyDamageDealt, 0.85f);
+            }
+        }
+    }
+
+    private float computeDamageDealt(float damage, float damageAmount) {
+        if (damage > 2) {
+            astronaut.setHealth(astronaut.getHealth() - (int) damage);
+            damage = 0;
+        } else {
+            damage += damageAmount;
+        }
+        if (astronaut.getHealth() <= 0) {
+            astronaut.setHealth(0);
+            game.gameOver();
+        }
+        return damage;
     }
 
     /*This method will determine how to player will respond after the dash has ended.

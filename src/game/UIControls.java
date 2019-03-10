@@ -13,15 +13,15 @@ import java.util.ArrayList;
 import static game.MouseHandler.lines;
 
 public class UIControls implements ActionListener {
-    private JPanel mainPanel;
     private JMenuBar menuBar;
     private boolean shaking = false;
+    private SuperLevel world;
+    private Game game;
 
-    UIControls() {
-
-        Game.getWorld().getView().setGridResolution(0);
-        mainPanel.setBackground(new Color(0, 0, 0, 0));
-        mainPanel.setBounds(0, 25, 790, 200);
+    UIControls(SuperLevel world1, Game game) {
+        this.world = world1;
+        this.game = game;
+        world.getView().setGridResolution(0);
 
         //Where the GUI is created:
         JMenu menu;
@@ -46,7 +46,7 @@ public class UIControls implements ActionListener {
             menuItem.setBorderPainted(false);
         }
 
-        Game.getWorld().getView().add(menuBar);
+        world.getView().add(menuBar);
     }
 
     @Override
@@ -68,72 +68,40 @@ public class UIControls implements ActionListener {
 
                 if (n == 0 || n == 1) {
                     Game.frame.remove(menuBar);
-                    Game.getWorld().getView().setGridResolution(0);
-                    if (Game.getWorld().getView().getxBound() != 1) {
-                        Game.getWorld().getView().stopShaking();
+                    world.getView().setGridResolution(0);
+                    if (world.getView().getxBound() != 1) {
+                        world.getView().stopShaking();
                     }
-                    Game.getWorld().stopTimers();
-                    Game.levelNum = 0;
-                    Game.getWorld().getView().setState(STATE.MENU);
-                    Game.loadLevel();
+                    world.stopTimers();
+                    game.setLevelNum(0);
+                    world.getView().setState(STATE.MENU);
+                    game.loadLevel();
                 }
                 break;
             case "Pause": {
                 JMenuItem item = (JMenuItem) e.getSource();
-                if (Game.getWorld().getView().getxBound() > 1) {
+                if (world.getView().getxBound() > 1) {
                     shaking = true;
                 }
-                Game.getWorld().getView().stopShaking();
-                Game.getWorld().stop();
+                world.getView().stopShaking();
+                world.stop();
                 item.setText("Resume");
                 break;
             }
             case "Resume": {
                 JMenuItem item = (JMenuItem) e.getSource();
                 if (shaking) {
-                    Game.getWorld().getView().startShaking();
+                    world.getView().startShaking(0);
                 }
-                Game.getWorld().start();
+                world.start();
                 item.setText("Pause");
                 break;
             }
             case "Save":
-//            //Add saving functionality here.
-//            String result = (String) JOptionPane.showInputDialog(
-//                    Game.frame,
-//                    "Please enter a name for your level...",
-//                    "Save Level...",
-//                    JOptionPane.PLAIN_MESSAGE,
-//                    null,
-//                    null, null);
-//
-//            if (result != null) {
-//                Game.getWorld().addAvailableLevels(result);
-//
-//                BufferedWriter writer = null;
-//
-//                try {
-//                    writer = new BufferedWriter(new FileWriter("data/Levels/" + result + ".txt"));
-//                    for (Object line : lines) {
-//                        writer.write(line.toString() + "\n");
-//                    }
-//                    writer.flush();
-//                } catch (IOException e1) {
-//                    e1.printStackTrace();
-//                } finally {
-//                    if (writer != null) {
-//                        try {
-//                            writer.close();
-//                        } catch (IOException err) {
-//                            err.printStackTrace();
-//                        }
-//                    }
-//                }
-//                Game.currentLevel = result;
-//            }
+                //Add saving functionality here.
                 break;
             case "Load":
-                Object[] possibilities = Game.getWorld().getAvailableLevels().toArray();
+                Object[] possibilities = world.getAvailableLevels().toArray();
                 String result = (String) JOptionPane.showInputDialog(
                         Game.frame,
                         "Please select a level to load...",
@@ -145,23 +113,25 @@ public class UIControls implements ActionListener {
                 if (result != null) {
                     if (result.length() >= 5) {
                         if (result.substring(0, 5).equals("Level")) {
-                            Game.levelNum = Integer.parseInt(result.substring(6));
+                            game.setLevelNum(Integer.parseInt(result.substring(6)));
                         } else {
-                            Game.levelNum = -1;
-                            Game.currentLevel = result;
+                            game.setLevelNum(-1);
+                            game.setCurrentLevel(result);
                         }
                     } else {
-                        Game.levelNum = -1;
-                        Game.currentLevel = result;
+                        game.setLevelNum(-1);
+                        game.setCurrentLevel(result);
                     }
-                    Game.getWorld().getView().stopShaking();
-                    Game.getWorld().stopTimers();
-                    Game.loadLevel();
+                    world.getView().stopShaking();
+                    world.stopTimers();
+                    world.getPlayer().setStats(game.getDefaultPlayerStats());
+                    game.loadLevel();
                 }
                 break;
             case "Restart":
-                Game.getWorld().stopTimers();
-                Game.loadLevel();
+                world.stopTimers();
+                world.getPlayer().setStats(game.getDefaultPlayerStats());
+                game.loadLevel();
                 break;
             case "Help":
                 JOptionPane.showMessageDialog(Game.frame, "Press Mouse 1 to fire.\n" +
@@ -171,59 +141,4 @@ public class UIControls implements ActionListener {
                 break;
         }
     }
-
-//    public UIControls() {
-//        mainPanel.setBackground(new Color(0, 0, 0, 0));
-//        mainPanel.setBounds(BackgroundPanel.WIDTH-180, 5, 175, 65);
-//        restartButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                Game.loadLevel();
-//            }
-//        });
-//        pauseButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                if (pauseStatus == 0) {
-//                    pauseButton.setText("Resume");
-//                    Game.getWorld().stop();
-//                    pauseStatus++;
-//                } else {
-//                    pauseButton.setText("Pause");
-//                    Game.getWorld().start();
-//                    pauseStatus--;
-//                }
-//                //Game.frame.requestFocusInWindow();
-//            }
-//        });
-//        mainMenuButton.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                //Custom button text
-//                Object[] options = {"Yes, please",
-//                        "No, thanks",
-//                        "Cancel"};
-//                int n = JOptionPane.showOptionDialog(Game.frame,
-//                        "Loading the main menu will cause you to lose your progress. Do you want to save your progress?",
-//                        "WARNING",
-//                        JOptionPane.YES_NO_CANCEL_OPTION,
-//                        JOptionPane.WARNING_MESSAGE,
-//                        null,
-//                        options,
-//                        options[2]);
-//
-//                if (n == 0 || n == 1) {
-//                    if (Game.levelNum == 1) {
-//                        Game.getWorld().getView().stopShaking();
-//                    }
-//                    Game.levelNum = 0;
-//                    Game.getWorld().stopTimers();
-//                    Game.getWorld().getView().setState(STATE.MENU);
-//                    Game.loadLevel();
-//                }
-//            }
-//        });
-//    }
-
-    JPanel getMainPanel() { return mainPanel; }
 }

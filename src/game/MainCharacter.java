@@ -10,9 +10,11 @@ class MainCharacter extends Walker {
     private int ammo;
     private AttachedImage astronautImage;
     private AttachedImage arm;
+    private String armImage;
 
     private float dashCooldown = 0.0f;
     private boolean canDash = false;
+    private boolean acquiredBoots = false;
 
     private boolean dPressed = false;
     private boolean aPressed = false;
@@ -21,57 +23,73 @@ class MainCharacter extends Walker {
 
     private boolean jumping = false;
     private int extraJumps;
-    private int extraJumpsLimit = 2;
+    private int extraJumpsLimit;
     private boolean canJump = false;
     private double jumpPressedRemember;
     private double jumpPressedRememberTime = 0.15f;
 
-    MainCharacter(Shape shape, int health, int armour, int ammo) {
-        super(Game.getWorld(), shape);
+    MainCharacter(SuperLevel world, Shape shape, int health, int armour, int ammo, int extraJumpsLimit, int level) {
+        super(world, shape);
         this.health = health;
         this.armour = armour;
         this.ammo = ammo;
+        this.extraJumpsLimit = extraJumpsLimit;
         this.extraJumps = this.extraJumpsLimit;
         this.setName("Player");
 
         this.setGravityScale(9.81f);
 
-        this.astronautImage = new AttachedImage(this, new BodyImage("data/Idle.png", 2.7f), 1, 0, new Vec2(0, 0));
-        this.arm = new AttachedImage(this, new BodyImage("data/Arm.png", 2), 0.19f, 0, new Vec2(-0.15f, 0));
+        this.astronautImage = new AttachedImage(this, new BodyImage("data/Idle.png", 2.2f), 1, 0, new Vec2(0, 0));
+        if (level > 5 || level == -1) {
+            this.armImage = "data/ArmPistol.png";
+        } else if (level > 0){
+            this.armImage = "data/Arm.png";
+        }
+        this.arm = new AttachedImage(this, new BodyImage(armImage, 2), 0.19f, 0, new Vec2(-0.15f, 0));
     }
 
+    @SuppressWarnings("Duplicates")
     void changeImages(String path) {
         if (this.astronautImage.isFlippedHorizontal()) {
             this.removeAllImages();
             this.astronautImage = new AttachedImage(this, new BodyImage("data/" + path, 2.2f), 1, 0, new Vec2(0, 0));
-            this.arm = new AttachedImage(this, new BodyImage("data/Arm.png", 2), 0.19f, 0, new Vec2(-0.15f, 0));
+            this.arm = new AttachedImage(this, new BodyImage(armImage, 2), 0.19f, 0, new Vec2(-0.15f, 0));
 
             this.astronautImage.flipHorizontal();
             this.arm.flipHorizontal();
         } else if (!this.astronautImage.isFlippedHorizontal()) {
             this.removeAllImages();
             this.astronautImage = new AttachedImage(this, new BodyImage("data/" + path, 2.2f), 1, 0, new Vec2(0, 0));
-            this.arm = new AttachedImage(this, new BodyImage("data/Arm.png", 2), 0.19f, 0, new Vec2(-0.15f, 0));
+            this.arm = new AttachedImage(this, new BodyImage(armImage, 2), 0.19f, 0, new Vec2(-0.15f, 0));
         }
     }
 
     AttachedImage getAstronautImage() {
         return astronautImage;
     }
-    public void setAstronautImage(AttachedImage astronautImage) {
-        this.astronautImage = astronautImage;
-    }
 
     AttachedImage getArm() {
         return arm;
     }
-    public void setArm(AttachedImage arm) {
-        this.arm = arm;
+
+    String getArmImage() {
+        return armImage;
+    }
+
+    void setArmImage(String armImage) {
+        this.armImage = armImage;
+    }
+
+    void setStats(int[] stats) {
+        this.health = stats[0];
+        this.armour = stats[1];
+        this.ammo = stats[2];
     }
 
     int getHealth() {
         return this.health;
     }
+
     void setHealth(int health) {
         this.health = health;
     }
@@ -79,6 +97,7 @@ class MainCharacter extends Walker {
     int getArmour() {
         return this.armour;
     }
+
     void setArmour(int armour) {
         this.armour = armour;
     }
@@ -86,6 +105,7 @@ class MainCharacter extends Walker {
     int getAmmo() {
         return this.ammo;
     }
+
     void setAmmo(int ammo) {
         this.ammo = ammo;
     }
@@ -97,6 +117,7 @@ class MainCharacter extends Walker {
     float getDashCooldown() {
         return dashCooldown;
     }
+
     void setDashCooldown(float dashCooldown) {
         this.dashCooldown = dashCooldown;
     }
@@ -104,6 +125,7 @@ class MainCharacter extends Walker {
     boolean isCanDash() {
         return canDash;
     }
+
     void setCanDash(boolean canDash) {
         this.canDash = canDash;
     }
@@ -111,6 +133,7 @@ class MainCharacter extends Walker {
     boolean isDPressed() {
         return dPressed;
     }
+
     void setDPressed(boolean dPressed) {
         this.dPressed = dPressed;
     }
@@ -118,6 +141,7 @@ class MainCharacter extends Walker {
     boolean isAPressed() {
         return aPressed;
     }
+
     void setAPressed(boolean aPressed) {
         this.aPressed = aPressed;
     }
@@ -125,6 +149,7 @@ class MainCharacter extends Walker {
     int getMovingDir() {
         return movingDir;
     }
+
     void setMovingDir(int movingDir) {
         this.movingDir = movingDir;
     }
@@ -132,6 +157,7 @@ class MainCharacter extends Walker {
     boolean isBothKeysPressed() {
         return bothKeysPressed;
     }
+
     void setBothKeysPressed(boolean bothKeysPressed) {
         this.bothKeysPressed = bothKeysPressed;
     }
@@ -139,6 +165,7 @@ class MainCharacter extends Walker {
     boolean isJumping() {
         return jumping;
     }
+
     void setJumping(boolean jumping) {
         this.jumping = jumping;
     }
@@ -146,6 +173,7 @@ class MainCharacter extends Walker {
     int getExtraJumps() {
         return extraJumps;
     }
+
     void setExtraJumps(int extraJumps) {
         this.extraJumps = extraJumps;
     }
@@ -153,6 +181,7 @@ class MainCharacter extends Walker {
     int getExtraJumpsLimit() {
         return extraJumpsLimit;
     }
+
     void setExtraJumpsLimit(int extraJumpsLimit) {
         this.extraJumpsLimit = extraJumpsLimit;
     }
@@ -160,6 +189,7 @@ class MainCharacter extends Walker {
     boolean isCanJump() {
         return canJump;
     }
+
     void setCanJump(boolean canJump) {
         this.canJump = canJump;
     }
@@ -167,6 +197,7 @@ class MainCharacter extends Walker {
     double getJumpPressedRemember() {
         return jumpPressedRemember;
     }
+
     void setJumpPressedRemember(double jumpPressedRemember) {
         this.jumpPressedRemember = jumpPressedRemember;
     }
@@ -174,7 +205,16 @@ class MainCharacter extends Walker {
     double getJumpPressedRememberTime() {
         return jumpPressedRememberTime;
     }
+
     void setJumpPressedRememberTime(double jumpPressedRememberTime) {
         this.jumpPressedRememberTime = jumpPressedRememberTime;
+    }
+
+    public boolean isAcquiredBoots() {
+        return acquiredBoots;
+    }
+
+    public void setAcquiredBoots(boolean acquiredBoots) {
+        this.acquiredBoots = acquiredBoots;
     }
 }

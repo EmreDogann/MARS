@@ -1,0 +1,183 @@
+#data/Backgrounds/Lava/
+platform2,-11.922736,-6.15,1.6,0.1,1
+pickupLoot Goblet,-7.0325413,-2.5,0.5,0.5,2
+platform7,-3.1972795,-6.15,1.6,0.1,3
+platform5,7.3609138,-6.1,1.6,0.1,4
+pickupLoot Treasure Sack,2.4735312,-6.55,0.5,0.5,5
+platform7,21.887987,-6.1,1.6,0.1,6
+pickupLoot Bag,12.573775,-1.5500001,0.5,0.5,7
+pickupLoot Bag,13.673775,-3.25,0.5,0.5,8
+pickupLoot Bag,14.990791,-5.0,0.5,0.5,9
+pickupLoot Bag,16.221659,-6.4500003,0.5,0.5,10
+pickupLoot Bag,17.240255,-5.05,0.5,0.5,11
+pickupLoot Bag,18.390255,-3.55,0.5,0.5,12
+pickupLoot Bag,20.090256,-4.9,0.5,0.5,13
+platform7,35.36902,-6.15,1.6,0.1,14
+platform10,35.35332,-1.15,1.6,0.1,15
+platform9,35.420277,3.8500001,1.6,0.1,16
+platform6,57.525272,-7.1,1.6,0.1,17
+pickupLoot Bag,39.90638,7.6,0.5,0.5,18
+pickupLoot Bag,43.056377,1.95,0.5,0.5,19
+pickupLoot Bag,45.40638,-3.15,0.5,0.5,20
+pickupLoot Bag,48.480713,-0.45000002,0.5,0.5,21
+pickupLoot Bag,50.480713,-0.45000002,0.5,0.5,22
+pickupLoot Bag,52.530712,-0.45000002,0.5,0.5,23
+pickupLoot Bag,54.480713,-0.45000002,0.5,0.5,24
+pickupLoot Bag,57.442436,-6.4,0.5,0.5,25
+platform1,60.798363,-7.1,1.6,0.1,26
+platform3,64.04099,-7.1,1.6,0.1,27
+platform4,67.27463,-7.1,1.6,0.1,28
+platform3,70.53846,-7.1,1.6,0.1,29
+platform6,73.90457,-7.1,1.6,0.1,30
+platform6,77.044754,-7.1,1.6,0.1,31
+crumblingPlatform,80.31329,-7.1,1.60,0.10,32
+crumblingPlatform,83.58679,-7.1,1.60,0.10,33
+crumblingPlatform,86.83679,-7.1,1.60,0.10,34
+crumblingPlatform,90.13679,-7.1,1.60,0.10,35
+crumblingPlatform,93.43679,-7.1,1.60,0.10,36
+crumblingPlatform,98.556404,-7.05,1.60,0.10,37
+crumblingPlatform,103.90742,-7.1,1.60,0.10,38
+crumblingPlatform,109.426956,-7.05,1.60,0.10,39
+crumblingPlatform,116.97029,-7.0,1.60,0.10,40
+crumblingPlatform,125.02395,-7.05,1.60,0.10,41
+crumblingPlatform,133.4901,-7.05,1.60,0.10,42
+crumblingPlatform,152.81258,-7.1,1.60,0.10,43
+crumblingPlatform,173.16388,-7.15,1.60,0.10,44
+crumblingPlatform,189.90291,-7.2000003,1.60,0.10,45
+pickupLoot Crystal,79.415924,-6.4500003,0.5,0.5,46
+pickupLoot Crystal,81.065926,-6.4,0.5,0.5,47
+pickupLoot Crystal,80.21593,-6.4500003,0.5,0.5,48
+pickupLoot Crystal,82.01592,-6.4,0.5,0.5,49
+pickupLoot Crystal,82.905464,-6.4,0.5,0.5,50
+pickupLoot Crystal,83.75546,-6.4,0.5,0.5,51
+pickupLoot Crystal,84.60546,-6.4,0.5,0.5,52
+pickupLoot Crystal,85.50546,-6.4,0.5,0.5,53
+pickupLoot Crystal,86.405464,-6.4,0.5,0.5,54
+pickupLoot Crystal,87.283554,-6.4,0.5,0.5,55
+pickupLoot Coins,95.97217,-3.5,0.5,0.5,56
+pickupLoot Coins,101.494675,-3.45,0.5,0.5,57
+pickupLoot Coins,106.58958,-7.85,0.5,0.5,58
+pickupLoot Coins,112.486305,-3.5,0.5,0.5,59
+pickupLoot Coins,114.53631,-3.45,0.5,0.5,60
+pickupLoot Coins,116.486305,-3.5,0.5,0.5,61
+pickupLoot Coins,118.58631,-3.5,0.5,0.5,62
+pickupLoot Coins,120.53631,-3.5,0.5,0.5,63
+pickupLoot Coins,122.486305,-3.5,0.5,0.5,64
+platform7,16.17768,-9.150001,1.6,0.1,65
+enemy,16.22768,-8.05, , ,66
+enemy,34.754677,-0.15, , ,67
+enemy,34.781406,4.85, , ,68
+platform9,58.507484,-1.0500001,1.6,0.1,69
+enemy,58.45748,-0.05, , ,70
+enemy,63.90041,-6.1, , ,71
+enemy,67.346504,-6.1, , ,72
+enemy,70.4407,-6.15, , ,73
+enemy,73.85238,-6.15, , ,74
+enemy,77.10676,-6.1, , ,75
+pickupLoot Goblet,70.50153,-2.55,0.5,0.5,76
+pickupLoot Coins,137.49248,-3.55,0.5,0.5,77
+pickupLoot Coins,140.45903,-2.55,0.5,0.5,78
+pickupLoot Coins,142.50903,-2.5,0.5,0.5,79
+pickupLoot Coins,144.45903,-2.5,0.5,0.5,80
+pickupLoot Coins,147.46007,-3.45,0.5,0.5,81
+pickupLoot Treasure Sack,150.51007,-0.5,0.5,0.5,82
+pickupLoot Coins,157.47871,-9.5,0.5,0.5,83
+pickupLoot Coins,160.50145,-7.5,0.5,0.5,84
+pickupLoot Coins,162.45145,-7.5,0.5,0.5,85
+pickupLoot Coins,164.45145,-7.5,0.5,0.5,86
+pickupLoot Coins,166.49515,-7.55,0.5,0.5,87
+pickupLoot Treasure Sack,168.40144,-5.55,0.5,0.5,88
+pickupHealth,180.53233,-3.55,0.5,0.5,89
+pickupHealth,184.48235,-3.55,0.5,0.5,90
+pickupShield,182.48235,-3.5,0.5,0.5,91
+pickupLoot Crystal,186.40518,-7.4500003,0.5,0.5,92
+crumblingPlatform,196.58913,-3.15,1.60,0.10,93
+crumblingPlatform,196.63913,-7.15,1.60,0.10,94
+crumblingPlatform,202.84453,-7.15,1.60,0.10,95
+crumblingPlatform,208.95702,-7.15,1.60,0.10,96
+crumblingPlatform,214.8224,-7.15,1.60,0.10,97
+crumblingPlatform,221.33481,-7.1,1.60,0.10,98
+crumblingPlatform,206.78258,0.85,1.60,0.10,99
+crumblingPlatform,211.92357,2.8500001,1.60,0.10,100
+crumblingPlatform,222.40515,6.85,1.60,0.10,101
+pickupHealth,228.61516,4.8,0.5,0.5,102
+pickupShield,234.06967,0.90000004,0.5,0.5,103
+pickupShield,235.66516,-4.9500003,0.5,0.5,104
+crumblingPlatform,239.46915,-7.05,1.60,0.10,105
+crumblingPlatform,242.75595,-7.05,1.60,0.10,106
+crumblingPlatform,246.00433,-7.05,1.60,0.10,107
+crumblingPlatform,249.26892,-7.05,1.60,0.10,108
+crumblingPlatform,259.16867,-7.05,1.60,0.10,109
+crumblingPlatform,268.9793,-7.05,1.60,0.10,110
+crumblingPlatform,272.24408,-7.05,1.60,0.10,111
+crumblingPlatform,275.51816,-7.05,1.60,0.10,112
+crumblingPlatform,278.7806,-7.05,1.60,0.10,113
+crumblingPlatform,282.05005,-7.05,1.60,0.10,114
+crumblingPlatform,285.31946,-7.05,1.60,0.10,115
+crumblingPlatform,288.63425,-7.05,1.60,0.10,116
+enemy,232.80914,-6.1, , ,117
+enemy,242.48878,-6.05, , ,118
+crumblingPlatform,255.90173,-7.05,1.60,0.10,119
+pickupLoot Goblet,252.5409,-7.0,0.5,0.5,120
+enemy,255.62686,-6.0, , ,121
+enemy,268.66754,-6.05, , ,122
+enemy,275.3787,-6.05, , ,123
+enemy,285.1598,-6.05, , ,124
+enemy,288.4559,-6.05, , ,125
+pickupHealth,263.1105,-7.25,0.5,0.5,126
+pickupHealth,264.85852,-7.25,0.5,0.5,127
+pickupShield,280.01086,-6.0,0.5,0.5,128
+exit,302.9803,-11.85,1.30,0.60,129
+crumblingPlatform,291.71072,-1.5,1.60,0.10,130
+crumblingPlatform,294.81073,-2.65,1.60,0.10,131
+crumblingPlatform,297.96072,-3.7,1.60,0.10,132
+crumblingPlatform,301.11075,-4.9,1.60,0.10,133
+crumblingPlatform,304.16074,-6.3,1.60,0.10,134
+crumblingPlatform,307.3303,-7.8,1.60,0.10,135
+crumblingPlatform,291.70496,-8.45,1.60,0.10,136
+crumblingPlatform,294.95496,-9.8,1.60,0.10,137
+crumblingPlatform,298.50494,-10.7,1.60,0.10,138
+enemy,291.50494,-0.25, , ,139
+enemy,294.75494,-1.4, , ,140
+enemy,297.90497,-2.6000001, , ,141
+enemy,300.95496,-3.8, , ,142
+enemy,304.15497,-5.25, , ,143
+enemy,307.2303,-6.8, , ,144
+enemy,291.68323,-7.25, , ,145
+enemy,294.85092,-8.55, , ,146
+enemy,307.1303,-10.2, , ,147
+crumblingPlatform,307.3303,-11.3,1.60,0.10,148
+crumblingPlatform,244.30547,1.1,1.60,0.10,149
+pickupLoot Crystal,244.1703,1.8000001,0.5,0.5,150
+pickupLoot Crystal,244.1703,1.8000001,0.5,0.5,151
+pickupLoot Coins,238.5203,2.5,0.5,0.5,152
+pickupLoot Coins,236.5703,2.5,0.5,0.5,153
+pickupLoot Coins,240.5203,2.5,0.5,0.5,154
+crumblingPlatform,-17.294365,-6.1,1.60,0.10,155
+platform5,-22.677097,-6.3,1.6,0.1,156
+crumblingPlatform,-27.992836,-6.2000003,1.60,0.10,157
+platform5,-33.32634,-6.4,1.6,0.1,158
+crumblingPlatform,-43.639202,-4.1,1.60,0.10,159
+crumblingPlatform,-48.83183,-1.95,1.60,0.10,160
+crumblingPlatform,-59.59061,1.8000001,1.60,0.10,161
+crumblingPlatform,-67.81812,3.45,1.60,0.10,162
+crumblingPlatform,-87.610886,6.25,1.60,0.10,163
+platform2,-69.45504,-7.9500003,1.6,0.1,164
+pickupLoot Crystal,-88.53787,6.9,0.5,0.5,165
+pickupLoot Crystal,-87.702034,6.9,0.5,0.5,166
+pickupLoot Crystal,-86.75204,6.9,0.5,0.5,167
+platform1,-63.45504,-7.9500003,1.6,0.1,168
+platform3,-57.491383,-7.9500003,1.6,0.1,169
+platform4,-51.472553,-8.0,1.6,0.1,170
+platform4,-46.009132,-8.0,1.6,0.1,171
+platform7,-40.306965,-8.05,1.6,0.1,172
+enemy,201.59996,-0.05, , ,173
+enemy,206.64996,1.85, , ,174
+enemy,211.89125,3.8500001, , ,175
+crumblingPlatform,201.67493,-1.0500001,1.60,0.10,176
+crumblingPlatform,217.22984,4.5,1.60,0.10,177
+pickupAmmo,217.09744,5.2000003,0.5,0.5,178
+pickupLoot Chest,221.64374,7.85,0.5,0.5,179
+pickupLoot Chest,222.99374,7.85,0.5,0.5,180
+crumblingPlatform,232.80914,-7.1,1.60,0.10,181
+crumblingPlatform,236.10915,-7.1,1.60,0.10,182

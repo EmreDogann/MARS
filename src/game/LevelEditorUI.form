@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="game.LevelEditorUI">
-  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="3" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="4" column-count="4" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="698" height="79"/>
+      <xy x="20" y="20" width="698" height="116"/>
     </constraints>
     <properties>
       <opaque value="false"/>
@@ -27,7 +27,9 @@
       </component>
       <component id="3d216" class="javax.swing.JCheckBox" binding="enableAsteroidsCheckBox" default-binding="true">
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="112" height="31"/>
+          </grid>
         </constraints>
         <properties>
           <focusPainted value="false"/>
@@ -38,23 +40,32 @@
           <text value="Enable Asteroids"/>
         </properties>
       </component>
-      <component id="c2e09" class="javax.swing.JComboBox" binding="comboBox">
+      <component id="c2e09" class="javax.swing.JComboBox" binding="objectComboBox">
         <constraints>
-          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="152" height="31"/>
+          </grid>
         </constraints>
         <properties>
           <background color="-4488905"/>
           <editable value="false"/>
           <enabled value="true"/>
-          <focusable value="true"/>
+          <focusable value="false"/>
           <foreground color="-1"/>
           <model>
             <item value="Platform"/>
             <item value="Crumbling Platform"/>
+            <item value="Exit"/>
             <item value="Enemy"/>
             <item value="Health"/>
             <item value="Shield"/>
             <item value="Ammo"/>
+            <item value="Loot Bag"/>
+            <item value="Loot Chest"/>
+            <item value="Loot Coins"/>
+            <item value="Loot Crystal"/>
+            <item value="Loot Goblet"/>
+            <item value="Loot Treasure Sack"/>
           </model>
           <opaque value="true"/>
           <requestFocusEnabled value="false"/>
@@ -62,15 +73,15 @@
       </component>
       <hspacer id="a017">
         <constraints>
-          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
       </hspacer>
       <vspacer id="bd548">
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
       </vspacer>
-      <component id="93d54" class="javax.swing.JLabel" binding="selectionText">
+      <component id="93d54" class="javax.swing.JLabel" binding="objectSelectionText">
         <constraints>
           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
         </constraints>
@@ -78,6 +89,56 @@
           <foreground color="-1"/>
           <requestFocusEnabled value="false"/>
           <text value="Select an object to create: "/>
+        </properties>
+      </component>
+      <component id="fc333" class="javax.swing.JLabel" binding="bgSelectionText">
+        <constraints>
+          <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <foreground color="-1"/>
+          <requestFocusEnabled value="false"/>
+          <text value="Select a background to use:"/>
+        </properties>
+      </component>
+      <component id="14864" class="javax.swing.JComboBox" binding="backgroundComboBox">
+        <constraints>
+          <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false">
+            <preferred-size width="116" height="31"/>
+          </grid>
+        </constraints>
+        <properties>
+          <background color="-4488905"/>
+          <editable value="false"/>
+          <enabled value="true"/>
+          <focusable value="false"/>
+          <foreground color="-1"/>
+          <model>
+            <item value="Mars Surface"/>
+            <item value="Industrial"/>
+            <item value="Mine"/>
+            <item value="Dungeon"/>
+            <item value="Crystal"/>
+            <item value="Lava"/>
+          </model>
+          <opaque value="true"/>
+          <requestFocusEnabled value="false"/>
+          <selectedIndex value="0"/>
+        </properties>
+      </component>
+      <component id="2f25e" class="javax.swing.JCheckBox" binding="enableOutline">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="112" height="31"/>
+          </grid>
+        </constraints>
+        <properties>
+          <focusPainted value="false"/>
+          <foreground color="-1"/>
+          <margin top="2" left="2" bottom="2" right="2"/>
+          <opaque value="false"/>
+          <requestFocusEnabled value="false"/>
+          <text value="Enable Object Outline"/>
         </properties>
       </component>
     </children>

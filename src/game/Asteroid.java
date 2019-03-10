@@ -13,12 +13,12 @@ class Asteroid extends DynamicBody{
     private Random rand = new Random();
     private MainCharacter astronaut;
 
-    Asteroid(CircleShape shape, int damage, MainCharacter astronaut) {
-        super(Game.getWorld(), shape);
+    Asteroid(SuperLevel world, CircleShape shape, int damage, MainCharacter astronaut, Game game) {
+        super(world, shape);
         this.damage = damage;
         this.astronaut = astronaut;
 
-        this.addCollisionListener(new CollisionHandler());
+        this.addCollisionListener(new CollisionHandler(game));
     }
 
     int getDamage() { return this.damage; }
