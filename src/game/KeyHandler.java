@@ -11,34 +11,42 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Random;
 
+/**
+ * Responsible for handling all the keystroke events where the user presses a key while the game is running.
+ */
 public class KeyHandler extends JFrame implements KeyListener {
 
-    private MainCharacter astronaut;
+    private MainCharacter player;
     private int previousKey;
     private ActionListener lookAtCursor;
 
     private StepHandler step;
 
-    private float dashSpeed;
     private StaticBody dustCloud;
     private StaticBody jumpCloud;
     private boolean flip = false;
 
     private Game game;
 
-    KeyHandler(MainCharacter astronaut, ActionListener lookAtCursor, StepHandler step, float dashSpeed, World world, Game game) {
-        //System.out.println("Listening for keys...");
-        this.astronaut = astronaut;
+    /**
+     * Constructor for KeyHandler.
+     * @param player Instance of the current player.
+     * @param lookAtCursor Reference to the lookAtCursor ActionListener in SuperLevel.
+     * @param step Instance of StepHandler.
+     * @param world Current world.
+     * @param game Instance of Game.
+     */
+    public KeyHandler(MainCharacter player, ActionListener lookAtCursor, StepHandler step, World world, Game game) {
+        this.player = player;
         this.lookAtCursor = lookAtCursor;
         this.step = step;
         this.game = game;
         dustCloud = new StaticBody(world);
         jumpCloud = new StaticBody(world);
 
-        this.dashSpeed = dashSpeed;
     }
 
-    //This ActionListener will play a dust cloud gif whenever the player dashes while grounded.
+    //This ActionListener will play a dust cloud PNGs (in data/DustCloud) whenever the player dashes while grounded.
     private ActionListener playDustCloud = new ActionListener() {
         int index = 4;
 
@@ -61,7 +69,7 @@ public class KeyHandler extends JFrame implements KeyListener {
     private Timer timer = new Timer(10, playDustCloud);
     private int index = 0;
 
-    //This ActionListener will play a dust cloud gif whenever the player dashes while grounded.
+    //This ActionListener will play a the jump cloud PNGs (in data/JumpCloud1-3) whenever the player pressed the space bar.
     private ActionListener playJumpCloud = new ActionListener() {
         Random rand = new Random();
 
@@ -79,232 +87,237 @@ public class KeyHandler extends JFrame implements KeyListener {
 
     private Timer timer1 = new Timer(10, playJumpCloud);
 
+    /**
+     * Not used. Included because of interface.
+     */
     public void keyTyped(KeyEvent e) {
     }
 
+    /**
+     * Called whenever a key is pressed by the user.
+     * @param e The key event which holds information about the key pressed.
+     */
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
-        if (game.getLevelNum() > 4 || astronaut.isAcquiredBoots()) {
-            /*If the dashing cool-down timer is depleted and the user does not have both keys pressed (!astronaut.stopped).*/
-            if (astronaut.isCanDash() && !astronaut.isBothKeysPressed()) {
+        if (game.getLevelNum() > 4 || player.isAcquiredBoots()) {
+            // If the dashing cool-down timer is depleted and the user does not have both keys pressed (!player.stopped).
+            if (player.isCanDash() && !player.isBothKeysPressed()) {
                 if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
-                    /*stopWalking() is called otherwise the applied force would be overwritten when the step listener in Walker changes the velocity.*/
-                    astronaut.stopWalking();
-                    astronaut.changeImages("DashPic.png");
-                    if (!astronaut.getAstronautImage().isFlippedHorizontal()) {
-                        astronaut.applyForce(new Vec2(3000 * dashSpeed, astronaut.getLinearVelocity().y));
-                        astronaut.addImage(new BodyImage("data/Dash.gif", 2));
+                    // stopWalking() is called otherwise the applied force would be overwritten when the step listener in Walker changes the velocity.
+                    player.stopWalking();
+                    player.changeImages("DashPic.png");
+                    if (!player.getPlayerImage().isFlippedHorizontal()) {
+                        player.applyForce(new Vec2(3000 * player.getDashSpeed(), player.getLinearVelocity().y));
+                        player.addImage(new BodyImage("data/Dash.gif", 2));
                     } else {
-                        astronaut.applyForce(new Vec2(-3000 * dashSpeed, astronaut.getLinearVelocity().y));
-                        astronaut.addImage(new BodyImage("data/Dash.gif", 2)).flipHorizontal();
+                        player.applyForce(new Vec2(-3000 * player.getDashSpeed(), player.getLinearVelocity().y));
+                        player.addImage(new BodyImage("data/Dash.gif", 2)).flipHorizontal();
                     }
 
                     if (game.getLevelNum() == 1) {
-                        /*If the player is grounded, produce a dust cloud when dashing.*/
-                        if (!astronaut.isJumping()) {
-                            dustCloud.setPosition(astronaut.getPosition());
+                        // If the player is grounded, produce a dust cloud when dashing.
+                        if (!player.isJumping()) {
+                            dustCloud.setPosition(player.getPosition());
                             flip = false;
                             timer.start();
                         }
                     }
 
-                    step.setDashing(true);
-                    astronaut.setCanDash(false);
+                    step.setDashing();
+                    player.setCanDash(false);
                 }
             }
         }
 
-        if (!step.isDashing()) {
+        if (step.isNotDashing()) {
             if (key == KeyEvent.VK_D) {  //Pressing the 'd' key moves the player right.
-                astronaut.setMovingDir(1);
-                if (!astronaut.isDPressed()) {
+                player.setMovingDir(1);
+                if (!player.isDPressed()) {
                     step.setStartAccelerate(true);
                 }
-                astronaut.setDPressed(true);
-                if (astronaut.getAstronautImage().isFlippedHorizontal()) {  //If player is facing left, flip him to face right.
-                    astronaut.getAstronautImage().flipHorizontal();
-                    astronaut.getArm().flipHorizontal();
+                player.setDPressed(true);
+                if (player.getPlayerImage().isFlippedHorizontal()) {  //If player is facing left, flip him to face right.
+                    player.getPlayerImage().flipHorizontal();
+                    player.getArm().flipHorizontal();
                 }
 
-                if (!astronaut.isJumping()) {
-                    astronaut.changeImages("WalkAnimation.gif");
+                if (!player.isJumping()) {
+                    player.changeImages("WalkAnimation.gif");
                 }
                 previousKey = key;
 
             } else if (key == KeyEvent.VK_A) {  //Pressing the 'a' key moves the player left.
-                astronaut.setMovingDir(-1);
-                if (!astronaut.isAPressed()) {
+                player.setMovingDir(-1);
+                if (!player.isAPressed()) {
                     step.setStartAccelerate(true);
                 }
-                astronaut.setAPressed(true);
-                if (!astronaut.getAstronautImage().isFlippedHorizontal()) {  //If player is facing right, flip him to face left.
-                    astronaut.getAstronautImage().flipHorizontal();
-                    astronaut.getArm().flipHorizontal();
+                player.setAPressed(true);
+                if (!player.getPlayerImage().isFlippedHorizontal()) {  //If player is facing right, flip him to face left.
+                    player.getPlayerImage().flipHorizontal();
+                    player.getArm().flipHorizontal();
                 }
 
-                if (!astronaut.isJumping()) {
-                    astronaut.changeImages("WalkAnimation.gif");
+                if (!player.isJumping()) {
+                    player.changeImages("WalkAnimation.gif");
                 }
                 previousKey = key;
 
-            } else if (key == KeyEvent.VK_SPACE && astronaut.isCanJump()) {  //If the player presses SPACE while the jump cool-down timer is depleted.
-                if (astronaut.isJumping() && astronaut.getExtraJumps() == 0) {
-                    astronaut.setJumpPressedRemember(astronaut.getJumpPressedRememberTime());
+            } else if (key == KeyEvent.VK_SPACE && player.isCanJump()) {  //If the player presses SPACE while the jump cool-down timer is depleted.
+                if (player.isJumping() && player.getExtraJumps() == 0) {
+                    player.setJumpPressedRemember(player.getJumpPressedRememberTime());
                 }
-                if (astronaut.getExtraJumps() > 0) {
-                    astronaut.setLinearVelocity(new Vec2(astronaut.getLinearVelocity().x, 0));
-                    astronaut.jump(26);
-                    jumpCloud.setPosition(astronaut.getPosition());
+                if (player.getExtraJumps() > 0) {
+                    player.setLinearVelocity(new Vec2(player.getLinearVelocity().x, 0));
+                    player.jump(26);
+                    jumpCloud.setPosition(player.getPosition());
                     index = 0;
                     timer1.start();
                 }
-                astronaut.changeImages("Jump.png");
+                player.changeImages("Jump.png");
                 previousKey = key;
-                astronaut.setJumping(true);
-                astronaut.setCanJump(false);
-                step.setJump(true);  /*Start the jump cool-down timer in StepHandler.*/
-                astronaut.setExtraJumps(astronaut.getExtraJumps() - 1);
+                player.setJumping(true);
+                player.setCanJump(false);
+                step.setJump(true);  // Start the jump cool-down timer in StepHandler.
+                player.setExtraJumps(player.getExtraJumps() - 1);
             }
-        } else {  /*If currently dashing...*/
+        } else {  // If currently dashing...
             if (key == KeyEvent.VK_D) {
-                astronaut.setMovingDir(1);
-                astronaut.setDPressed(true);
+                player.setMovingDir(1);
+                player.setDPressed(true);
                 previousKey = key;
             } else if (key == KeyEvent.VK_A) {
-                astronaut.setMovingDir(-1);
-                astronaut.setAPressed(true);
+                player.setMovingDir(-1);
+                player.setAPressed(true);
                 previousKey = key;
             } else if (key == KeyEvent.VK_SPACE) {
                 previousKey = key;
-                astronaut.setCanJump(true);
+                player.setCanJump(true);
             }
         }
 
         //If both 'a' and 'd' keys are pressed while grounded.
-        if (astronaut.isAPressed() && astronaut.isDPressed() && (key == KeyEvent.VK_D || key == KeyEvent.VK_A)) {
-            astronaut.stopWalking();
+        if (player.isAPressed() && player.isDPressed() && (key == KeyEvent.VK_D || key == KeyEvent.VK_A)) {
+            player.stopWalking();
             step.setStartAccelerate(false);
             //Uncomment below to stop player in mid-air when both A and D are pressed.
-//            if (astronaut.jumpState) {
-//                astronaut.setLinearVelocity(new Vec2(0, astronaut.getLinearVelocity().y));
+//            if (player.jumpState) {
+//                player.setLinearVelocity(new Vec2(0, player.getLinearVelocity().y));
 //            }
-            astronaut.setBothKeysPressed(true);
-            if (!step.isDashing()) {
-                if (!astronaut.isJumping()) {  //If the player is not dashing or currently in the air, then slow the player down to a stop and give it an idle image.
-                    astronaut.changeImages("Idle.png");
-                    astronaut.setLinearVelocity(new Vec2(astronaut.getLinearVelocity().x / 2, astronaut.getLinearVelocity().y));
+            player.setBothKeysPressed(true);
+            if (step.isNotDashing()) {
+                if (!player.isJumping()) {  //If the player is not dashing or currently in the air, then slow the player down to a stop and give it an idle image.
+                    player.changeImages("Idle.png");
+                    player.setLinearVelocity(new Vec2(player.getLinearVelocity().x / 2, player.getLinearVelocity().y));
                 }
-                astronaut.getAstronautImage().flipHorizontal();
-                astronaut.getArm().flipHorizontal();
+                player.getPlayerImage().flipHorizontal();
+                player.getArm().flipHorizontal();
             }
         }
         //If the player presses a key while in the air while both 'a' and 'd' keys are not simultaneously pressed.
-        if (astronaut.isJumping() && !astronaut.isBothKeysPressed()) {
+        if (player.isJumping() && !player.isBothKeysPressed()) {
             if (key == KeyEvent.VK_D) {  //Move the player right.
-                astronaut.setMovingDir(1);
-                astronaut.setAPressed(false);
-                astronaut.setDPressed(true);
-                astronaut.stopWalking();
+                player.setMovingDir(1);
+                player.setAPressed(false);
+                player.setDPressed(true);
+                player.stopWalking();
             } else if (key == KeyEvent.VK_A) {  //Move the player left.
-                astronaut.setMovingDir(-1);
-                astronaut.setAPressed(true);
-                astronaut.setDPressed(false);
-                astronaut.stopWalking();
+                player.setMovingDir(-1);
+                player.setAPressed(true);
+                player.setDPressed(false);
+                player.stopWalking();
             }
         }
         //Have the arm rotate to look at the mouse cursor.
-        if (astronaut.getArmImage().equals("data/ArmPistol.png")) {
-            lookAtCursor.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
-        }
+        lookAtCursor.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
     }
 
+    /**
+     * Called whenever a key is released by the user.
+     * @param e The key event which holds information about the key pressed.
+     */
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
         //If both keys are pressed and either the 'a' or 'd' key is released.
-        if (astronaut.isBothKeysPressed() && (key == KeyEvent.VK_A || key == KeyEvent.VK_D)) {
-            if (!step.isDashing()) {
+        if (player.isBothKeysPressed() && (key == KeyEvent.VK_A || key == KeyEvent.VK_D)) {
+            if (step.isNotDashing()) {
                 //Face the character in the opposite direction if true.
                 if (key != previousKey) {
-                    astronaut.getAstronautImage().flipHorizontal();
-                    astronaut.getArm().flipHorizontal();
+                    player.getPlayerImage().flipHorizontal();
+                    player.getArm().flipHorizontal();
                 }
             }
-            astronaut.setBothKeysPressed(false);
+            player.setBothKeysPressed(false);
             //If 'd' was released, move the player left, otherwise move right.
             if (key == KeyEvent.VK_D) {
-                astronaut.setMovingDir(-1);
-                astronaut.setDPressed(false);
+                player.setMovingDir(-1);
+                player.setDPressed(false);
                 previousKey = KeyEvent.VK_A;
                 step.setStartAccelerate(true);
             } else {
-                astronaut.setMovingDir(1);
-                astronaut.setAPressed(false);
+                player.setMovingDir(1);
+                player.setAPressed(false);
                 previousKey = KeyEvent.VK_D;
                 step.setStartAccelerate(true);
             }
             //Change to a running animation.
-            if (!step.isDashing() && !astronaut.isJumping()) {
-                astronaut.changeImages("WalkAnimation.gif");
+            if (step.isNotDashing() && !player.isJumping()) {
+                player.changeImages("WalkAnimation.gif");
             }
-            if (astronaut.getArmImage().equals("data/ArmPistol.png")) {
-                lookAtCursor.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
-            }
+            lookAtCursor.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
 
         } else if (key == previousKey && (key == KeyEvent.VK_A || key == KeyEvent.VK_D)) {  //If the player pressed 'a' or 'd' and released it without pressing a different key.
-            if (!step.isDashing()) {
+            if (step.isNotDashing()) {
                 //Half the player's current speed to bring him to a stop earlier.
-                if (!astronaut.isJumping()) {
-                    astronaut.setLinearVelocity(new Vec2(astronaut.getLinearVelocity().x / 2, astronaut.getLinearVelocity().y));
+                if (!player.isJumping()) {
+                    player.setLinearVelocity(new Vec2(player.getLinearVelocity().x / 2, player.getLinearVelocity().y));
                 }
-                //Slowly bring the astronaut to a stop.
+                //Slowly bring the player to a stop.
                 if (key == KeyEvent.VK_D) {
-                    astronaut.setDPressed(false);
+                    player.setDPressed(false);
                 } else {
-                    astronaut.setAPressed(false);
+                    player.setAPressed(false);
                 }
                 step.setStartAccelerate(false);
-                astronaut.stopWalking();
+                player.stopWalking();
 
             } else {  //If the player is dashing...
                 if (key == KeyEvent.VK_D) {
-                    astronaut.setDPressed(false);
+                    player.setDPressed(false);
                 } else {
-                    astronaut.setAPressed(false);
+                    player.setAPressed(false);
                 }
             }
 
-            if (!astronaut.isJumping() && !step.isDashing()) {
-                astronaut.changeImages("Idle.png");
+            if (!player.isJumping() && step.isNotDashing()) {
+                player.changeImages("Idle.png");
             }
-            if (astronaut.getArmImage().equals("data/ArmPistol.png")) {
-                lookAtCursor.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
-            }
+            lookAtCursor.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
 
         } else if (previousKey == KeyEvent.VK_SPACE && (key == KeyEvent.VK_D || key == KeyEvent.VK_A)) {  //If the first key released after pressing SPACE is either 'a' or 'd'...
-            if (!step.isDashing()) {
+            if (step.isNotDashing()) {
                 if (key == KeyEvent.VK_D) {
-                    astronaut.setDPressed(false);
+                    player.setDPressed(false);
                 } else {
-                    astronaut.setAPressed(false);
+                    player.setAPressed(false);
                 }
-                astronaut.stopWalking();
+                player.stopWalking();
                 step.setStartAccelerate(false);
 
-                if (!astronaut.isJumping()) {
-                    astronaut.changeImages("Idle.png");
+                if (!player.isJumping()) {
+                    player.changeImages("Idle.png");
                 }
             } else {
                 if (key == KeyEvent.VK_D) {
-                    astronaut.setDPressed(false);
+                    player.setDPressed(false);
                 } else {
-                    astronaut.setAPressed(false);
+                    player.setAPressed(false);
                 }
             }
 
-        } else if (key == KeyEvent.VK_SHIFT && !astronaut.isBothKeysPressed()) {  //If the player releases the SHIFT key and does not have both 'a' and 'd' keys pressed.
-            if (astronaut.isDPressed()) {
+        } else if (key == KeyEvent.VK_SHIFT && !player.isBothKeysPressed()) {  //If the player releases the SHIFT key and does not have both 'a' and 'd' keys pressed.
+            if (player.isDPressed()) {
                 previousKey = KeyEvent.VK_D;
-            } else if (astronaut.isAPressed()) {
+            } else if (player.isAPressed()) {
                 previousKey = KeyEvent.VK_A;
             }
         }

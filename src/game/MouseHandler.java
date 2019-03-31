@@ -11,13 +11,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Responsible for handling all the mouse events (such as when the player presses a mouse button or moves the mouse within the frame).
+ */
 public class MouseHandler extends MouseInputAdapter {
 
     private SuperLevel world;
     private BackgroundPanel view;
     private Game game;
 
-    private MainCharacter astronaut;
+    private MainCharacter player;
 
     private double theta;
     private float distance;
@@ -25,32 +28,47 @@ public class MouseHandler extends MouseInputAdapter {
     private boolean itemDragged = false;
     private StaticBody body;
 
+    //The lines variable ensures that the object and all of its states are kept track of, so that when the user decides the save their game it remembers all the objects that the user created and moved around.
     static ArrayList<String> lines = new ArrayList<>();
 
-    MouseHandler(SuperLevel world, BackgroundPanel view, MainCharacter astronaut, Game game) {
+    /**
+     * Constructor for MouseHandler.
+     * @param world Current world.
+     * @param view Instance of BackgroundPanel.
+     * @param player Current player.
+     * @param game Instance of Game.
+     */
+    public MouseHandler(SuperLevel world, BackgroundPanel view, MainCharacter player, Game game) {
         this.world = world;
         this.view = view;
-        this.astronaut = astronaut;
+        this.player = player;
         this.game = game;
     }
 
+    /**
+     * Called whenever the player presses a mouse button while the mouse is in the JFrame.
+     * @param e Holds all the information relating to the mouse event.
+     */
     @SuppressWarnings("Duplicates")
     public void mousePressed(MouseEvent e) {
         //Fire a bullet if left click is pressed.
-        if (astronaut.getArmImage().equals("data/ArmPistol.png") && world.getState() == STATE.GAME) {
+        if (player.isAcquiredPistol() && world.getState() == STATE.GAME) {
             if (e.getButton() == MouseEvent.BUTTON1) {
-                if (astronaut.getAmmo() > 0) {
+                if (player.getAmmo() > 0) {
                     final Shape bulletShape = new BoxShape(0.125f, 0.125f);
                     final BodyImage bulletImage = new BodyImage("data/Bullet.png", 0.25f);
 
+                    //Create instance of bullet.
                     Bullet bullet = new Bullet(view.getWorld(), bulletShape, 35);
                     bullet.addImage(bulletImage);
-                    astronaut.setAmmo(astronaut.getAmmo() - 1);
+                    player.setAmmo(player.getAmmo() - 1);
 
+                    //Find x and y direction the player arm is facing.
                     float xDirection = (float) Math.cos(theta);
                     float yDirection = (float) Math.sin(theta);
 
-                    bullet.setPosition(new Vec2(astronaut.getPosition().x + xDirection * 1.3f, astronaut.getPosition().y + yDirection * 1.3f));
+                    bullet.setPosition(new Vec2(player.getPosition().x + xDirection * 1.3f, player.getPosition().y + yDirection * 1.3f));
+                    //Shoot the bullet in the direction the arm was pointing.
                     bullet.setLinearVelocity(new Vec2((xDirection * distance) * 30, (yDirection * distance) * 30));
                     bullet.addCollisionListener(new CollisionHandler(game));
                 }
@@ -60,17 +78,19 @@ public class MouseHandler extends MouseInputAdapter {
         if (world.getState() == STATE.LEVEL_EDITOR) {
             //Creates a new platform when middle click is pressed.
             if (e.getButton() == MouseEvent.BUTTON2) {
-                boolean noBody = true;
+                LevelEditorUI.isLevelSaved = false;
+                boolean bodyClicked = false;
                 List<StaticBody> list = world.getStaticBodies();
 
                 //Checks that the user is not trying to create an object on-top of another one.
                 for (StaticBody staticBody : list) {
                     if (staticBody.contains(view.viewToWorld(e.getPoint()))) {
-                        noBody = false;
+                        bodyClicked = true;
                     }
                 }
 
-                if (noBody) {
+                if (!bodyClicked) {
+                    //Create an object at the position of the mouse position depending on what item the user has selected in the drop-down menu.
                     switch (LevelEditorUI.createItem1) {
                         case "Platform":
                         case "Crumbling Platform":
@@ -85,11 +105,10 @@ public class MouseHandler extends MouseInputAdapter {
                             }
 
                             Shape shape1 = new BoxShape(width, height);
-                            Platform platform = null;
+                            Platform platform;
                             if (LevelEditorUI.createItem1.equals("Platform")) {
-                                platform = new Platform(world, shape1, "platform");
+                                platform = new Platform(world, shape1, "platform", ("platform" + randNum));
                                 platform.setName("Body" + (lines.size() + 1));
-                                //System.out.println("platform" + randNum + "," + view.viewToWorld(e.getPoint()).x + "," + view.viewToWorld(e.getPoint()).y + "," + width + "," + height + "," + (lines.size() + 1));
                                 lines.add("platform" + randNum + "," + view.viewToWorld(e.getPoint()).x + "," + view.viewToWorld(e.getPoint()).y + "," + width + "," + height + "," + (lines.size() + 1));
                                 if (LevelEditorUI.createItem2.equals("Mars Surface")) {
                                     platform.addImage(new BodyImage("data/Platform/platform" + randNum + ".png", 15)).setOffset(new Vec2(0, 0.12f));
@@ -97,13 +116,13 @@ public class MouseHandler extends MouseInputAdapter {
                                     platform.addImage(new BodyImage("data/Platform2/platform" + randNum + ".png", 15)).setOffset(new Vec2(0, 0.12f));
                                 }
                             } else if (LevelEditorUI.createItem1.equals("Crumbling Platform")) {
-                                platform = new Platform(world, shape1, "crumblingPlatform");
+                                platform = new Platform(world, shape1, "crumblingPlatform", "crumblingPlatform");
                                 platform.setName("Body" + (lines.size() + 1));
                                 lines.add("crumblingPlatform," + view.viewToWorld(e.getPoint()).x + "," + view.viewToWorld(e.getPoint()).y + "," + "1.60,0.10," + (lines.size() + 1));
                                 platform.addImage(new BodyImage("data/crumblingPlatform.png", 3)).setOffset(new Vec2(0, 0.12f));
                             } else {
                                 shape1 = new BoxShape(1.30f, 0.60f);
-                                platform = new Platform(world, shape1, "exit");
+                                platform = new Platform(world, shape1, "exit", "exit");
                                 platform.setName("Body" + (lines.size() + 1));
                                 lines.add("exit," + view.viewToWorld(e.getPoint()).x + "," + view.viewToWorld(e.getPoint()).y + "," + "1.30,0.60," + (lines.size() + 1));
                                 platform.addImage(new BodyImage("data/exit.png", 3));
@@ -119,7 +138,7 @@ public class MouseHandler extends MouseInputAdapter {
                             PolygonShape shape1 = new PolygonShape(-1.186f, -0.816f, -1.186f, -0.1f, -0.251f, 0.825f, 0.251f, 0.825f, 1.181f, -0.105f, 1.186f, -0.821f, -1.186f, -0.821f);
                             StaticBody enemy = new StaticBody(world, shape1);
                             enemy.setName("Body" + (lines.size() + 1));
-                            lines.add("enemy," + view.viewToWorld(e.getPoint()).x + "," + view.viewToWorld(e.getPoint()).y + ", , ," + (lines.size() + 1));
+                            lines.add("enemy," + view.viewToWorld(e.getPoint()).x + "," + view.viewToWorld(e.getPoint()).y + ",100,35," + (lines.size() + 1));
                             enemy.addImage(new BodyImage("data/enemy.png", 1.65f));
                             enemy.setPosition(new Vec2(view.viewToWorld(e.getPoint())));
                             enemy.setLineColor(Color.BLUE);
@@ -151,6 +170,7 @@ public class MouseHandler extends MouseInputAdapter {
 
             //Destroys body selected by the cursor when right click is pressed.
             if (e.getButton() == MouseEvent.BUTTON3) {
+                LevelEditorUI.isLevelSaved = false;
                 List<StaticBody> list = world.getStaticBodies();
                 for (int counter = 0; counter < list.size(); counter++) {
                     StaticBody element = list.get(counter);
@@ -179,14 +199,15 @@ public class MouseHandler extends MouseInputAdapter {
                 }
             }
         }
-
-        if (e.getButton() == 4) {
-            System.out.println(view.viewToWorld(e.getPoint()));
-        }
     }
 
+    /**
+     * Called whenever the player holds down a mouse button and drags while the mouse is in the JFrame.
+     * @param e Holds all the information relating to the mouse event.
+     */
     public void mouseDragged(MouseEvent e) {
         if (world.getState() == STATE.LEVEL_EDITOR && !itemDragged) {
+            LevelEditorUI.isLevelSaved = false;
             List<StaticBody> list = world.getStaticBodies();
             for (StaticBody staticBody : list) {
                 if (staticBody.contains(new Vec2(view.viewToWorld(e.getPoint()).x, view.viewToWorld(e.getPoint()).y))) {
@@ -201,10 +222,15 @@ public class MouseHandler extends MouseInputAdapter {
         }
     }
 
+    /**
+     * Called whenever the player releases a mouse button while the mouse is in the JFrame.
+     * @param e Holds all the information relating to the mouse event.
+     */
     public void mouseReleased(MouseEvent e) {
         if (world.getState() == STATE.LEVEL_EDITOR) {
             List<StaticBody> list = world.getStaticBodies();
             for (StaticBody element : list) {
+                //Destroys the object at the mouse position if there is one.
                 if (element.contains(view.viewToWorld(e.getPoint())) || (itemDragged && element == body)) {
                     for (int i = 0; i < lines.size(); i++) {
                         String elementID = element.getName().substring(4);
@@ -226,26 +252,38 @@ public class MouseHandler extends MouseInputAdapter {
         }
     }
 
-
+    /**
+     * Called whenever the player moves the mouse while the mouse is in the JFrame.
+     * @param e Holds all the information relating to the mouse event.
+     */
     public void mouseMoved(MouseEvent e) {
         calculateTheta(e.getPoint());
     }
 
-    void calculateTheta(Point e) {
-        Vec2 mousePoint = view.viewToWorld(e);
-        Vec2 armPoint = astronaut.getPosition();
+    /**
+     * Called whenever the player presses a mouse button while the mouse is in the JFrame.
+     * @param mousePos The position of the mouse in view coordinates.
+     */
+    public void calculateTheta(Point mousePos) {
+        //Get the mouse position in world coordinates.
+        Vec2 mousePoint = view.viewToWorld(mousePos);
+        Vec2 armPoint = player.getPosition();
 
+        //Find the x and y distance between the arm and the mouse cursor.
         float deltaX = armPoint.x - mousePoint.x;
         float deltaY = armPoint.y - mousePoint.y;
 
+        //Find the distance between the arm and mouse cursor.
         distance = (float) Math.hypot(deltaX, deltaY);
 
-        theta = astronaut.getArm().isFlippedHorizontal() ? Math.atan2(deltaY, deltaX) + Math.PI : Math.atan2(deltaY, deltaX) + Math.PI;
+        //Find the angle to turn the arm based on the x and y distance.
+        theta = player.getArm().isFlippedHorizontal() ? Math.atan2(deltaY, deltaX) + Math.PI : Math.atan2(deltaY, deltaX) + Math.PI;
 
-        if (astronaut.getArm().isFlippedHorizontal()) {
-            astronaut.getArm().setRotation((float) (Math.PI - theta));
+        //Rotate the arm depending on which way the player is facing.
+        if (player.getArm().isFlippedHorizontal()) {
+            player.getArm().setRotation((float) (Math.PI - theta));
         } else {
-            astronaut.getArm().setRotation((float) theta);
+            player.getArm().setRotation((float) theta);
         }
     }
 }

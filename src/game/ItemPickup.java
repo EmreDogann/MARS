@@ -2,51 +2,69 @@ package game;
 
 import city.cs.engine.*;
 
-class ItemPickup extends StaticBody {
-    private int restoreAmount = 0;
+/**
+ * The items that are able to be picked up by the player such as health, armour, ammo, gold, etc.
+ */
+public class ItemPickup extends StaticBody {
+    private int itemValue = 0;
     private String type;
 
-    ItemPickup(SuperLevel world, Shape shape, String type, Game game) {
+    /**
+     * Constructor for ItemPickup. Sets up all the item values and attaches a sensor to the item.
+     * @param world Current world.
+     * @param shape Shape which defines the hit box of sensor for the item.
+     * @param type The type of item it is (health, gold, dash boots, etc.)
+     * @param game Instance of Game.
+     */
+    public ItemPickup(SuperLevel world, Shape shape, String type, Game game) {
         super(world);
+        //Add a sensor to the item which is handled in CollisionHandler.
         Sensor sensor = new Sensor(this, shape);
         sensor.addSensorListener(new CollisionHandler(game));
         this.type = type;
+        //Set the value of the item depending on the item type.
         switch (this.type) {
             case "Health":
-                this.restoreAmount = 30;
+                this.itemValue = 30;
                 break;
             case "Shield":
-                this.restoreAmount = 10;
+                this.itemValue = 10;
                 break;
             case "Ammo":
-                this.restoreAmount = 8;
+                this.itemValue = 8;
                 break;
             case "Loot Bag":
-                this.restoreAmount = 25;
+                this.itemValue = 25;
                 break;
             case "Loot Chest":
-                this.restoreAmount = 60;
+                this.itemValue = 60;
                 break;
             case "Loot Coins":
-                this.restoreAmount = 25;
+                this.itemValue = 25;
                 break;
             case "Loot Crystal":
-                this.restoreAmount = 75;
+                this.itemValue = 75;
                 break;
             case "Loot Goblet":
-                this.restoreAmount = 60;
+                this.itemValue = 60;
                 break;
             case "Loot Treasure Sack":
-                this.restoreAmount = 45;
+                this.itemValue = 45;
                 break;
         }
     }
 
-    String getType() {
+    /**
+     * @return the type of the item as a string.
+     */
+    public String getType() {
         return this.type;
     }
 
-    int getRestoreAmount() {
-        return this.restoreAmount;
+    /**
+     * @return the value of the item as an integer.
+     */
+    public int getItemValue() {
+        return this.itemValue;
     }
 }

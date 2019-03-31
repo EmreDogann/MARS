@@ -10,16 +10,35 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.Random;
 
+/**
+ * Stores and handles with everything unique to the Main Menu.
+ */
 public class Menu extends SuperLevel {
 
-    Menu(ArrayList<String> levels, Game game) {
-        super(STATE.MENU, levels, game);
+    /**
+     * Constructor for Menu. Calls super constructor (SuperLevel).
+     * @param availableLevels An ArrayList of all the levels in data/Levels.
+     * @param game Instance of Game.
+     * @param availableSaves An ArrayList of all the saves in data/Saves.
+     */
+    public Menu(ArrayList<String> availableLevels, Game game, ArrayList<String> availableSaves) {
+        super(STATE.MENU, availableLevels, game, availableSaves);
         readFolder("data/Backgrounds/Mars Surface/");
     }
 
+    /**
+     * Will draw the backgrounds corresponding to the main menu.
+     * @param g Instance of Graphics2D.
+     * @param x The new x position of the background.
+     * @param width The width of the background.
+     * @param height The height of the background/
+     * @param rand Instance of Random.
+     * @param xBound The current screen shake amount in the x direction.
+     * @param yBound The current screen shake amount in the y direction.
+     */
     @Override
     @SuppressWarnings("Duplicates")
-    void generateBackground(Graphics2D g, float x, int width, int height, Random rand, int xBound, int yBound) {
+    public void generateBackground(Graphics2D g, float x, int width, int height, Random rand, int xBound, int yBound) {
         BackgroundPanel view = getView();
         g.drawImage(iconHashMap.get("Background").getImage(), 0, 0, (int) (width * 1.05f), height, view);
         view.drawImage(g, iconHashMap.get("greenPlanet"), (int) (575 + x * -0.2f), 150, 0.25f);
@@ -38,11 +57,24 @@ public class Menu extends SuperLevel {
         view.backgroundTiling(g, iconHashMap.get("orangeMountain"), -x * 11 + (rand.nextInt(xBound) - xBound / 2f), height - 160 + (rand.nextInt(yBound) - yBound / 2), 2);
     }
 
+    /**
+     * Will draw the foregrounds related to the main menu.
+     * @param g Instance of Graphics2D.
+     * @param x The new x position of the background.
+     * @param width The width of the background.
+     * @param height The height of the background/
+     * @param rand Instance of Random.
+     * @param xBound The current screen shake amount in the x direction.
+     * @param yBound The current screen shake amount in the y direction.
+     */
     @Override
-    void generateForeground(Graphics2D g, float x, int width, int height, Random rand, int xBound, int yBound) {
+    public void generateForeground(Graphics2D g, float x, int width, int height, Random rand, int xBound, int yBound) {
         getView().backgroundTiling(g, iconHashMap.get("ground"), -x * 20 + (rand.nextInt(xBound) - xBound / 2f), height - 45 + (rand.nextInt(yBound) - yBound / 2), 1.5f);
     }
 
+    /**
+     * @return the starting position of the player as type Vec2.
+     */
     @Override
     public Vec2 startPosition() {
         return new Vec2(0, 0);

@@ -5,9 +5,12 @@ import org.jbox2d.common.Vec2;
 
 import java.util.List;
 
+/**
+ * Handles everything that needs to be checked on continuously (such as player movement, updating score time, etc.)
+ */
 public class StepHandler implements StepListener {
 
-    private MainCharacter astronaut;
+    private MainCharacter player;
     private BackgroundPanel view;
     private Game game;
     private SimulationSettings settings = new SimulationSettings(60);
@@ -28,11 +31,17 @@ public class StepHandler implements StepListener {
     private float enemyDamageDealt = 0;
     private float groundDamageDealt = 0;
 
-    StepHandler(BackgroundPanel view, MainCharacter astronaut, Game game) {
+    /**
+     * Constructor for StepHandler.
+     * @param view Instance of Background Panel.
+     * @param player Current player.
+     * @param game Instance of Game.
+     */
+    public StepHandler(BackgroundPanel view, MainCharacter player, Game game) {
         this.game = game;
         this.score = game.getScore();
         this.view = view;
-        this.astronaut = astronaut;
+        this.player = player;
         this.dashDuration = defaultDashDuration;
         this.jumpCooldown = 0.0f;
         if (game.getLevelNum() == 1) {
@@ -40,6 +49,7 @@ public class StepHandler implements StepListener {
         }
     }
 
+    //Find the ground object in level 1 in order to deal damage to the player over time if they are touching the ground.
     private void findGround() {
         List<StaticBody> bodies = game.getWorld().getStaticBodies();
         for (Body body : bodies) {
@@ -50,32 +60,50 @@ public class StepHandler implements StepListener {
         }
     }
 
-    public boolean isStartAccelerate() {
-        return startAccelerate;
-    }
-
-    void setStartAccelerate(boolean startAccelerate) {
+    /**
+     * Update the state of whether or not the player is accelerating.
+     * @param startAccelerate New boolean state.
+     */
+    public void setStartAccelerate(boolean startAccelerate) {
         this.startAccelerate = startAccelerate;
     }
 
+    /**
+     * @return if the player is jumping.
+     */
     public boolean isJump() {
         return jump;
     }
 
-    void setJump(boolean jump) {
+    /**
+     * Update the state of whether or not the player is jumping.
+     * @param jump New boolean state.
+     */
+    public void setJump(boolean jump) {
         this.jump = jump;
     }
 
-    boolean isDashing() {
-        return jump;
+    /**
+     * @return if the player is not dashing.
+     */
+    public boolean isNotDashing() {
+        return !jump;
     }
 
-    void setDashing(boolean dashing) {
-        this.dashing = dashing;
+    /**
+     * Set if the player is dashing to true.
+     */
+    public void setDashing() {
+        this.dashing = true;
     }
 
+    /**
+     * Called at the start of each step. Used to keep track of the player's jump and dash state, as well as the score and score time.
+     * @param stepEvent Information relating to the current step.
+     */
     @Override
     public void preStep(StepEvent stepEvent) {
+        //Update the current score and time.
         if (score != null) {
             score.setCurrTime(score.getCurrTime() + settings.getTimeStep());
             if (score.isScoreChanged()) {
@@ -89,114 +117,123 @@ public class StepHandler implements StepListener {
                 }
             }
         }
-        view.setCentre(new Vec2(astronaut.getPosition().x, 0));
-        view.setX(astronaut.getPosition().x);
+        //Follow the x position of the player with the camera.
+        view.setCentre(new Vec2(player.getPosition().x, 0));
+        //Used for parallaxing.
+        view.setX(player.getPosition().x);
 
         //If the player is currently in the air and is not dashing and does not have both keys held down...
-        if (astronaut.isJumping() && !dashing && (astronaut.isAPressed() || astronaut.isDPressed())) {
+        if (player.isJumping() && !dashing && (player.isAPressed() || player.isDPressed())) {
             accelerate(33.6f);
-        } else if (startAccelerate && !astronaut.isBothKeysPressed()) { /*This is used for whenever the player is not in the air.*/
+        } else if (startAccelerate && !player.isBothKeysPressed()) { //This is used for whenever the player is not in the air.
             accelerate(10);
-//            if (astronaut.isDPressed()) {
-//                view.setCentre(new Vec2(view.getCentre().x + 1, 0));
-//            } else if (astronaut.isAPressed()) {
-//                view.setCentre(new Vec2(view.getCentre().x - 1, 0));
-//            }
         }
 
-        //Once the astronaut reaches a speed of 12 or -12, we stop accelerating him and give it at constant velocity.
-        if ((astronaut.getLinearVelocity().x >= 12 || astronaut.getLinearVelocity().x <= -12) && !dashing && !astronaut.isJumping() && startAccelerate) {
+        //Once the player reaches a speed of 12 or -12, we stop accelerating him and give it at constant velocity.
+        if ((player.getLinearVelocity().x >= 12 || player.getLinearVelocity().x <= -12) && !dashing && !player.isJumping() && startAccelerate) {
             startAccelerate = false;
-            astronaut.startWalking(astronaut.getLinearVelocity().x);
+            player.startWalking(player.getLinearVelocity().x);
         }
 
-        /*Checks if the player is currently dashing. If he is, then the game will count down how long the dash has left
-        (dashDuration) until it needs to stop dashing.*/
+        /* Checks if the player is currently dashing. If he is, then the game will count down how long the dash has left
+        (dashDuration) until it needs to stop dashing. */
         if (dashing) {
+            //If the dash is finished...
             if (dashDuration <= 0) {
                 dashDuration = defaultDashDuration;
-                if (!astronaut.isBothKeysPressed()) {
-                    if (astronaut.isDPressed()) {
-                        dashEnd(astronaut.getMovingDir());
-                        if (astronaut.getAstronautImage().isFlippedHorizontal()) {
-                            astronaut.getAstronautImage().flipHorizontal();
-                            astronaut.getArm().flipHorizontal();
+                if (!player.isBothKeysPressed()) {
+                    if (player.isDPressed()) {
+                        //Stop the dash and start moving normally.
+                        dashEnd(player.getMovingDir());
+                        //Flip the player if needed.
+                        if (player.getPlayerImage().isFlippedHorizontal()) {
+                            player.getPlayerImage().flipHorizontal();
+                            player.getArm().flipHorizontal();
                         }
-                    } else if (astronaut.isAPressed()) {
-                        dashEnd(astronaut.getMovingDir());
-                        if (!astronaut.getAstronautImage().isFlippedHorizontal()) {
-                            astronaut.getAstronautImage().flipHorizontal();
-                            astronaut.getArm().flipHorizontal();
+                    } else if (player.isAPressed()) {
+                        dashEnd(player.getMovingDir());
+                        if (!player.getPlayerImage().isFlippedHorizontal()) {
+                            player.getPlayerImage().flipHorizontal();
+                            player.getArm().flipHorizontal();
                         }
-                    } else {
-                        if (!astronaut.getAstronautImage().isFlippedHorizontal()) {
-                            astronaut.setLinearVelocity(new Vec2(6, 0));
-                        } else if (astronaut.getAstronautImage().isFlippedHorizontal()) {
-                            astronaut.setLinearVelocity(new Vec2(-6, 0));
+                    } else { //If the player is not pressing d or a at the end of the dash...
+                        //Have the player slide to a halt.
+                        if (!player.getPlayerImage().isFlippedHorizontal()) {
+                            player.setLinearVelocity(new Vec2(6, 0));
+                        } else if (player.getPlayerImage().isFlippedHorizontal()) {
+                            player.setLinearVelocity(new Vec2(-6, 0));
                         }
-                        if (!astronaut.isJumping()) {
-                            astronaut.changeImages("Idle.png");
+                        if (!player.isJumping()) {
+                            player.changeImages("Idle.png");
                         } else {
-                            astronaut.changeImages("Jump.png");
+                            player.changeImages("Jump.png");
                         }
                     }
-                } else {
-                    if (!astronaut.getAstronautImage().isFlippedHorizontal()) {
-                        astronaut.setLinearVelocity(new Vec2(12, 0));
-                    } else if (astronaut.getAstronautImage().isFlippedHorizontal()) {
-                        astronaut.setLinearVelocity(new Vec2(-12, 0));
+                } else { //If the player is pressing both a and d at the same time when the dash ends...
+                    //Have the player slide to a halt.
+                    if (!player.getPlayerImage().isFlippedHorizontal()) {
+                        player.setLinearVelocity(new Vec2(9, 0));
+                    } else if (player.getPlayerImage().isFlippedHorizontal()) {
+                        player.setLinearVelocity(new Vec2(-9, 0));
                     }
-                    if (!astronaut.isJumping()) {
-                        astronaut.changeImages("Idle.png");
+                    if (!player.isJumping()) {
+                        player.changeImages("Idle.png");
                     } else {
-                        astronaut.changeImages("Jump.png");
+                        player.changeImages("Jump.png");
                     }
                 }
                 dashing = false;
-                astronaut.setDashCooldown(0.15f);
+                player.setDashCooldown(0.15f);
             } else {
                 dashDuration -= settings.getTimeStep();
             }
-            /*If the player is not currently dashing, then the game will count down how long the player has left until
-            he can dash again (dashCooldown).*/
+            /* If the player is not currently dashing, then the game will count down how long the player has left until
+            he can dash again (dashCooldown). */
         } else {
-            astronaut.setDashCooldown(astronaut.getDashCooldown() - settings.getTimeStep());
-            if (astronaut.getDashCooldown() <= 0.0 && !astronaut.isJumping()) {
-                astronaut.setCanDash(true);
+            player.setDashCooldown(player.getDashCooldown() - settings.getTimeStep());
+            if (player.getDashCooldown() <= 0.0 && !player.isJumping()) {
+                player.setCanDash(true);
             }
         }
 
-        /*Checks if the player is currently jumping. If he is, then the game will count down how long the jump has left
-        (jumpDuration) until it needs to stop dashing.*/
+        /* Checks if the player is currently jumping. If he is, then the game will count down how long the jump has left
+        (jumpDuration) until it needs to stop dashing. */
         if (jump) {
             jump = false;
             jumpCooldown = 0.01f;
         } else {
             jumpCooldown -= settings.getTimeStep();
             if (jumpCooldown <= 0.0) {
-                astronaut.setCanJump(true);
+                player.setCanJump(true);
             }
         }
-        astronaut.setJumpPressedRemember(astronaut.getJumpPressedRemember() - settings.getTimeStep());
+        player.setJumpPressedRemember(player.getJumpPressedRemember() - settings.getTimeStep());
     }
 
+    /**
+     * Called at the end of each step. Used to check if the player has died or to deal damage to the player over time.
+     * @param stepEvent Information relating to the current step.
+     */
     @Override
     public void postStep(StepEvent stepEvent) {
-        view.setX(astronaut.getPosition().x);
+        view.setX(player.getPosition().x);
+        //Check if the player has fallen off the level. If so, show death state.
         if (game.getLevelNum() > 1 && game.getWorld().getState() == STATE.GAME) {
-            if (astronaut.getPosition().y < -20) {
+            if (player.getPosition().y < -20) {
                 game.gameOver();
             }
         } else if (game.getLevelNum() == 1 && game.getWorld().getState() == STATE.GAME) {
+            //Only start dealing damage to the player if they are in contact with the ground 1.5 seconds after the player spawns.
             if (score.getCurrTime() > 1.5f) {
-                List<Body> bodiesInContact = astronaut.getBodiesInContact();
+                List<Body> bodiesInContact = player.getBodiesInContact();
                 if (bodiesInContact.contains(ground)) {
                     groundDamageDealt = computeDamageDealt(groundDamageDealt, 3f);
                 }
             }
         }
 
-        List<Body> bodiesInContact = astronaut.getBodiesInContact();
+        List<Body> bodiesInContact = player.getBodiesInContact();
+        //deal damage to the player over time as long as they are in contact with an enemy.
         for (Body body : bodiesInContact) {
             if (body instanceof Enemy) {
                 enemyDamageDealt = computeDamageDealt(enemyDamageDealt, 0.85f);
@@ -204,50 +241,51 @@ public class StepHandler implements StepListener {
         }
     }
 
+    //Deal damage to the player.
     private float computeDamageDealt(float damage, float damageAmount) {
         if (damage > 2) {
-            astronaut.setHealth(astronaut.getHealth() - (int) damage);
+            player.setHealth(player.getHealth() - (int) damage);
             damage = 0;
         } else {
             damage += damageAmount;
         }
-        if (astronaut.getHealth() <= 0) {
-            astronaut.setHealth(0);
+        if (player.getHealth() <= 0) {
+            player.setHealth(0);
             game.gameOver();
         }
         return damage;
     }
 
-    /*This method will determine how to player will respond after the dash has ended.
+    /* This method will determine how to player will respond after the dash has ended.
     It will adjust the player's velocity depending on which keys are being held down by the end of the dash.
-    The direction parameter is used to determine which way the player should move.*/
+    The direction parameter is used to determine which way the player should move. */
     private void dashEnd(int direction) {
-        if (astronaut.isJumping()) {
-            astronaut.setLinearVelocity(new Vec2(direction, 0));
+        if (player.isJumping()) {
+            player.setLinearVelocity(new Vec2(direction, 0));
         }
-        if (astronaut.getMovingDir() == direction) {
-            astronaut.setLinearVelocity(new Vec2(0, 0));
-            astronaut.startWalking(direction * 12);
-            if (!astronaut.isJumping()) {
-                astronaut.changeImages("WalkAnimation.gif");
+        if (player.getMovingDir() == direction) {
+            player.setLinearVelocity(new Vec2(0, 0));
+            player.startWalking(direction * 12);
+            if (!player.isJumping()) {
+                player.changeImages("WalkAnimation.gif");
             } else {
-                astronaut.changeImages("Jump.png");
+                player.changeImages("Jump.png");
             }
         }
     }
 
-    /*This method will ensure that when the player presses a key from the them being stationary,
+    /* This method will ensure that when the player presses a key from the them being stationary,
     the character will accelerate at a certain rate until it reaches our desired velocity at which point it
-    will keep moving at a constant velocity.*/
+    will keep moving at a constant velocity. */
     private void accelerate(float dampening) {
-        float horizontalVelocity = astronaut.getLinearVelocity().x;
-        if (astronaut.isJumping() && astronaut.isBothKeysPressed()) {
-            horizontalVelocity += -astronaut.getMovingDir() * 3;
+        float horizontalVelocity = player.getLinearVelocity().x;
+        if (player.isJumping() && player.isBothKeysPressed()) {
+            horizontalVelocity += -player.getMovingDir() * 3;
         } else {
-            horizontalVelocity += astronaut.getMovingDir() * 3;
+            horizontalVelocity += player.getMovingDir() * 3;
         }
         float horizontalDampening = 0.32f;
         horizontalVelocity *= Math.pow(1f - horizontalDampening, settings.getTimeStep() * dampening);
-        astronaut.setLinearVelocity(new Vec2(horizontalVelocity, astronaut.getLinearVelocity().y));
+        player.setLinearVelocity(new Vec2(horizontalVelocity, player.getLinearVelocity().y));
     }
 }
