@@ -2,3 +2,4 @@ resources/* linguist-documentation
 jquery/* linguist-documentation
 index-files/* linguist-documentation
 game/* linguist-documentation
+*.html linguist-dobumentation
