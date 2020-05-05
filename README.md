@@ -3,11 +3,11 @@ Utilising the City, University of London game engine, i created a 2D platformer 
 
 Features include:
 - Save/Load System
-- Level Editor with saving/loading (have ability to create completely new custom levels)
+- Level Editor with saving/loading (have the ability to create completely new custom levels)
 - Enemies
-- Score system
-- Player health system
+- Score System
+- Player Health System
 - Powerups
-- Extra movement mechanics: Double jumping, dashing. Mechanics were inspired by Celeste.
+- Additional Movement Mechanics: double jumping, dashing. Mechanics were inspired by Celeste.
 
 This was created in a couple of months as part of my Programming in Java course.
